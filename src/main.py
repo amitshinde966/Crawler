@@ -4,6 +4,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 # Google search URL
 url = "https://www.google.com/search?q=gate+cse+syllabus&oq=gate+cse+syllabus&aqs=chrome..69i57j0i512l9.4646j0j7&" \
@@ -41,12 +42,10 @@ for link in links:
         url_soup = BeautifulSoup(url_f.content, 'lxml')
 
         url_filtered_contents = []
+        # Search for downloadable link
         url_content = url_soup.find_all('a', href=True, download=True)
-        # print(url_content)
 
         for key in keywords:
-            # print("Checking key: " + key)
-
             for content in url_content:
                 # Case-insensitive search
                 if key.lower() in content.text.lower():
@@ -55,3 +54,12 @@ for link in links:
         # Print the links that satisfied the keywords
         print('\033[1m' + "Result: " + '\033[0m', url_filtered_contents)
         print("****************")
+
+        # Download any pdf available
+        for dwnld_links in url_filtered_contents:
+            parsedUrl = urlparse(checkUrl)
+            fetchUrl = parsedUrl.scheme + '://' + parsedUrl.netloc + '/' + dwnld_links['href']
+            # print('HREF', parsedUrl.scheme + '://' + parsedUrl.netloc + '/' + dwnld_links['href'])
+            dwnld_f = requests.get(fetchUrl, headers=headers)
+            with open('syllabus.pdf', 'wb') as f:
+                f.write(dwnld_f.content)
