@@ -3,12 +3,11 @@
 # keywords.
 
 import requests
-import lxml
 from bs4 import BeautifulSoup
-from requests.api import head
 
 # Google search URL
-url = "https://www.google.com/search?q=gate+cse+syllabus&oq=gate+cse+syllabus&aqs=chrome..69i57j0i512l9.4646j0j7&sourceid=chrome&ie=UTF-8"
+url = "https://www.google.com/search?q=gate+cse+syllabus&oq=gate+cse+syllabus&aqs=chrome..69i57j0i512l9.4646j0j7&" \
+      "sourceid=chrome&ie=UTF-8"
 
 # Headers to supply "requests" to enable crawling
 headers = {
@@ -42,7 +41,7 @@ for link in links:
         url_soup = BeautifulSoup(url_f.content, 'lxml')
 
         url_filtered_contents = []
-        url_content = url_soup.find_all('a', href=True)
+        url_content = url_soup.find_all('a', href=True, download=True)
         # print(url_content)
 
         for key in keywords:
