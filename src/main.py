@@ -1,65 +1,94 @@
-# The below crawler will crawl the Google search space and go through page 1 result of google for term "gate cse
-# syllabus". It will then go through each  URL and within each page it will search for anchor tags with the provided
-# keywords.
+#!/usr/bin/env python3
+"""
+The below crawler will crawl the Google search space and go through page 1 result of google for term "gate cse
+syllabus". It will then go through each  URL and within each page it will search for anchor tags with the provided
+keywords.
+"""
+
+__author__ = "Pranav Parge"
+__version__ = "1.0.0"
+__license__ = "MIT"
 
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
-# Google search URL
-url = "https://www.google.com/search?q=gate+cse+syllabus&oq=gate+cse+syllabus&aqs=chrome..69i57j0i512l9.4646j0j7&" \
-      "sourceid=chrome&ie=UTF-8"
 
-# Headers to supply "requests" to enable crawling
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 '
-                  'Safari/537.36 QIHU 360SE '
-}
+def main(searchStr):
+    # Split the string by space
+    searchStrs = searchStr.split(' ')
 
-# Keywords to search on each page
-keywords = ['download', 'cse', 'computer', 'computer science', 'computer engineering',
-            'computer science engineering', 'computer science and information technology']
+    # Google search URL for first 100 links
+    url = "https://www.google.com/search?num=100&q="
 
-# GET request for the URL
-f = requests.get(url, headers)
+    # Add searched string to Google URL
+    for index, s_str in enumerate(searchStrs):
+        url += s_str + '+'
 
-# Convert HTML TO XML using fast lxml parser
-soup = BeautifulSoup(f.content, 'lxml')
+    print('\033[91m' + '\033[1m' + 'GOOGLE URL:', url + '\033[0m' + '\033[0m')
+    # Headers to supply "requests" to enable crawling
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 '
+                      'Safari/537.36 QIHU 360SE '
+    }
 
-# Find all anchor tags on the page
-links = soup.find_all('a')
+    # Keywords to search on each page
+    keywords = searchStrs
 
-# For each link on the Google page 1
-for link in links:
-    if link["href"].startswith("/url?"):
-        # Split string in accordance
-        checkUrl = link["href"].split('q=')[1].split('&sa')[0]
+    # GET request for the URL
+    try:
+        f = requests.get(url, headers)
+    except Exception as e:
+        print('\033[91m' + '\033[1m' + 'GOOGLE NOT REACHABLE', e, '\033[0m' + '\033[0m')
+        raise Exception("GOOGLE NOT REACHABLE")
 
-        print('\033[1m' + "Checking URL: " + checkUrl + '\033[0m')
+    # Convert HTML TO XML using fast lxml parser
+    soup = BeautifulSoup(f.content, 'lxml')
 
-        # Again through the crawl process
-        url_f = requests.get(checkUrl, headers=headers)
-        url_soup = BeautifulSoup(url_f.content, 'lxml')
+    # Find all anchor tags on the page
+    links = soup.find_all('a')
 
-        url_filtered_contents = []
-        # Search for downloadable link
-        url_content = url_soup.find_all('a', href=True, download=True)
+    # For each link on the Google page 1
+    for link in links:
+        if link["href"].startswith("/url?"):
+            # Split string in accordance
+            checkUrl = link["href"].split('q=')[1].split('&sa')[0]
 
-        for key in keywords:
-            for content in url_content:
-                # Case-insensitive search
-                if key.lower() in content.text.lower():
-                    url_filtered_contents.append(content)
+            print('\033[1m' + "Checking URL: " + checkUrl + '\033[0m')
 
-        # Print the links that satisfied the keywords
-        print('\033[1m' + "Result: " + '\033[0m', url_filtered_contents)
-        print("****************")
+            # Again through the crawl process
+            try:
+                url_f = requests.get(checkUrl, headers=headers)
+            except Exception as e:
+                print('\033[91m' + '\033[1m' + 'NOT REACHABLE:', e, '\033[0m' + '\033[0m')
+                continue
 
-        # Download any pdf available
-        for dwnld_links in url_filtered_contents:
-            parsedUrl = urlparse(checkUrl)
-            fetchUrl = parsedUrl.scheme + '://' + parsedUrl.netloc + '/' + dwnld_links['href']
-            # print('HREF', parsedUrl.scheme + '://' + parsedUrl.netloc + '/' + dwnld_links['href'])
-            dwnld_f = requests.get(fetchUrl, headers=headers)
-            with open('syllabus.pdf', 'wb') as f:
-                f.write(dwnld_f.content)
+            url_soup = BeautifulSoup(url_f.content, 'lxml')
+
+            url_filtered_contents = []
+            # Search for downloadable link
+            url_content = url_soup.find_all('a', href=True, download=True)
+
+            for key in keywords:
+                for content in url_content:
+                    # Case-insensitive search
+                    if key.lower() in content.text.lower():
+                        url_filtered_contents.append(content)
+
+            # Print the links that satisfied the keywords
+            print('\033[1m' + "Result: " + '\033[0m', url_filtered_contents)
+            print("****************")
+
+            # Download any pdf available
+            for index, dwnld_links in enumerate(url_filtered_contents):
+                parsedUrl = urlparse(checkUrl)
+                fetchUrl = parsedUrl.scheme + '://' + parsedUrl.netloc + '/' + dwnld_links['href']
+                # print('HREF', parsedUrl.scheme + '://' + parsedUrl.netloc + '/' + dwnld_links['href'])
+                dwnld_f = requests.get(fetchUrl, headers=headers)
+                with open(f'syllabus_{index}.pdf', 'wb') as f:
+                    f.write(dwnld_f.content)
+
+
+if __name__ == "__main__":
+    # Pass the searched string
+    main("gate me syllabus")
