@@ -29,13 +29,13 @@ def main(searchStr):
     # Headers to supply "requests" to enable crawling
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 '
-                      'Safari/537.36 QIHU 360SE '
+                    'Safari/537.36 QIHU 360SE '
     }
 
     # Keywords to search on each page
     keywords = searchStrs
 
-    # GET request for the URL
+    # GET request for the Google URL
     try:
         f = requests.get(url, headers)
     except Exception as e:

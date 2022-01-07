@@ -76,4 +76,4 @@ Amit Shinde | Pranav Parge | Omkar Tupe
 List of resources we found helpful and would like to give credit to. I've included a few of my favorites to kick things off!
 
 * [Crawling Google Search Results - Part 1: Getting Started](https://dev.to/samzhangjy/crawling-google-search-results-1c9d)
-
+* [The Ultimate Guide to the Google Search Parameters](https://moz.com/blog/the-ultimate-guide-to-the-google-search-parameters)
