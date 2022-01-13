@@ -2,3 +2,4 @@
 .idea
 .vscode
 src/syllabus*
+__pycache__
