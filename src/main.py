@@ -13,35 +13,27 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
+from parameterizeUrl import parameterize_url
+from findAnchor import find_anchor
 
-def main(searchStr):
-    # Split the string by space
-    searchStrs = searchStr.split(' ')
 
-    # Google search URL for first 100 links & if skip/not "syllabus" keyword from search
-    url = "https://www.google.com/search?num=100&q=syllabus+"
-    for sStr in searchStrs:
-        if sStr.lower() == "syllabus":
-            url = "https://www.google.com/search?num=100&q="
-            break
-
-    # Add searched string to Google URL
-    for index, s_str in enumerate(searchStrs):
-        if index == len(searchStrs) - 1:
-            url += s_str
-        else:
-            url += s_str + '+'
-
-    print('\033[91m' + '\033[1m' + 'GOOGLE URL:', url + '\033[0m' + '\033[0m')
-
+def main(search_str):
     # Headers to supply "requests" to enable crawling
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 '
                     'Safari/537.36 QIHU 360SE '
     }
 
+    # Split the string by space
+    search_strs = search_str.split(' ')
+
+    # Google search URL for first 100 links & if skip/not "syllabus" keyword from search
+    url = parameterize_url(search_strs)
+
+    print('\033[91m' + '\033[1m' + 'GOOGLE URL:', url + '\033[0m' + '\033[0m')
+
     # Keywords to search on each page
-    keywords = searchStrs
+    keywords = search_strs
 
     # GET request for the Google URL
     try:
@@ -73,15 +65,11 @@ def main(searchStr):
 
             url_soup = BeautifulSoup(url_f.content, 'lxml')
 
-            url_filtered_contents = []
             # Search for downloadable link
             url_content = url_soup.find_all('a', href=True, download=True)
 
-            for key in keywords:
-                for content in url_content:
-                    # Case-insensitive search
-                    if key.lower() in content.text.lower():
-                        url_filtered_contents.append(content)
+            # Find all the desired URLs/Links with specific text
+            url_filtered_contents = find_anchor(keywords, url_content)
 
             # Print the links that satisfied the keywords
             print('\033[1m' + "Result: " + '\033[0m', url_filtered_contents)
@@ -99,4 +87,4 @@ def main(searchStr):
 
 if __name__ == "__main__":
     # Pass the searched string
-    main("gate chemical")
+    main("gate me syllabus")
