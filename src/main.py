@@ -18,14 +18,22 @@ def main(searchStr):
     # Split the string by space
     searchStrs = searchStr.split(' ')
 
-    # Google search URL for first 100 links
-    url = "https://www.google.com/search?num=100&q="
+    # Google search URL for first 100 links & if skip/not "syllabus" keyword from search
+    url = "https://www.google.com/search?num=100&q=syllabus+"
+    for sStr in searchStrs:
+        if sStr.lower() == "syllabus":
+            url = "https://www.google.com/search?num=100&q="
+            break
 
     # Add searched string to Google URL
     for index, s_str in enumerate(searchStrs):
-        url += s_str + '+'
+        if index == len(searchStrs) - 1:
+            url += s_str
+        else:
+            url += s_str + '+'
 
     print('\033[91m' + '\033[1m' + 'GOOGLE URL:', url + '\033[0m' + '\033[0m')
+
     # Headers to supply "requests" to enable crawling
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 '
@@ -91,4 +99,4 @@ def main(searchStr):
 
 if __name__ == "__main__":
     # Pass the searched string
-    main("gate me syllabus")
+    main("gate chemical")
