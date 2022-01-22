@@ -17,7 +17,7 @@ from parameterizeUrl import parameterize_url
 from findAnchor import find_anchor
 
 
-def main(search_str):
+def crawl(search_str):
     # Headers to supply "requests" to enable crawling
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 '
@@ -83,8 +83,3 @@ def main(search_str):
                 dwnld_f = requests.get(fetchUrl, headers=headers)
                 with open(f'syllabus_{index}.pdf', 'wb') as f:
                     f.write(dwnld_f.content)
-
-
-if __name__ == "__main__":
-    # Pass the searched string
-    main("gate me syllabus")
