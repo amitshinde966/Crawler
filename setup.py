@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='crawler',
+    name='exulercrawler',
     packages=find_packages(include=['src']),
     version='1.0.0',
     description='Exuler Crawler',
